@@ -1,4 +1,4 @@
-# 🤖 Personal AI Assistant
+# 🤖 Personal AI ChatBot
 
 A lightweight web-based personal assistant built with Flask and Google Gemini. The app provides a simple browser interface for asking general questions and summarizing email text.
 
