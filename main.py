@@ -1,10 +1,67 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request,jsonify
+
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv()
+api_key=os.getenv("GEMINI_API_KEY")
+
+client=OpenAI(
+    api_key=api_key,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"    
+)
 
 app=Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    return "<h1>Ankur Gangwar</h1>"
+    return render_template("index.html")
+
+@app.route("/ask",methods = ["POST"])
+def ask():
+    
+    question =request.form.get("question")
+    
+    response=client.chat.completions.create(
+        model="gemini-3.8-flash",
+        messages=[
+            {
+                "role":"system",
+                "content":"Act like a helpful personal assistant"
+            },
+            {
+                "role":"user",
+                "content":question
+            }
+            ],
+            max_tokens=512
+        )
+    answer = response.choices[0].message.content.strip()
+    return jsonify({"response":answer}), 200
+
+@app.route("/summarize",methods=["POST"])
+def summarize():
+    email_text = request.form.get("email")
+
+    prompt= f"summarize the following email in 2-3 sentences: {email_text}"
+    response=client.chat.completions.create(
+    model="gemini-3.8-flash",
+    messages=[
+                {
+                "role":"system",
+                "content":"Act like an expert email assistant"
+                },
+                {
+                "role":"user",
+                "content":prompt
+                }
+            ],
+             max_tokens=512
+            )
+    summary=response.choices[0].message.content.strip()
+    return jsonify({"response":summary}), 200
+
 
 if __name__=="__main__":
     app.run(debug=True)
