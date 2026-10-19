@@ -6,11 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Personal Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="icon" type="image/png"
+        href="https://imgs.search.brave.com/OaP4ugd_hv_q632rJSgslesVqiB1c8JX7N28tEixSnI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9jZG4u/aWNvbnNjb3V0LmNv/bS9pY29uL3ByZW1p/dW0vcG5nLTI1Ni10/aHVtYi9haS1jaGF0/Ym90LWljb24tc3Zn/LWRvd25sb2FkLXBu/Zy05ODUyNjc4LnBu/Zz9mPXdlYnAmdz0x/Mjg">
 </head>
 
 <body>
-    <h1 class="main-heading">AI Personal Assistant</h1>
-
+    <h1 class="main-heading">Personal AI ChatBot</h1>
+    <p class="deployment-notice">
+        ⚠️ Note: This app is hosted on a free server. If it has been inactive
+        for a while, the first response may take some time to load.
+        Please wait patiently while the server wakes up.
+    </p>
     <div class="container">
 
         <h2>Ask Anything</h2>
@@ -79,6 +85,33 @@
             "summary-loading",
             "summary"
         );
+
+        async function checkServer() {
+            const notice = document.getElementById("deploymentNotice");
+
+            try {
+                const response = await fetch("/", {
+                    method: "GET"
+                });
+
+                if (response.ok) {
+                    notice.style.display = "none";
+                }
+            } catch (error) {
+            }
+        }
+
+        checkServer();
+
+        const serverCheckInterval = setInterval(async () => {
+            const notice = document.getElementById("deploymentNotice");
+
+            if (notice && notice.style.display !== "none") {
+                await checkServer();
+            } else {
+                clearInterval(serverCheckInterval);
+            }
+        }, 3000);
     </script>
 
 </body>
